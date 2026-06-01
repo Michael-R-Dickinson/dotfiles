@@ -16,3 +16,7 @@ export ZDOTDIR="$DOTFILES_TMP"
 # Alias tools to use config files
 alias vim='vim -u $DOTFILES_TMP/.vimrc'
 alias tmux='tmux -f $DOTFILES_TMP/.tmux.conf'
+
+# Starship
+curl -sS https://starship.rs/install.sh | sh -s -- --bin-dir $DOTFILES_TMP --yes
+export PATH="$DOTFILES_TMP:$PATH"
