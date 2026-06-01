@@ -1,0 +1,8 @@
+# Prompt
+PS1='%F{blue}%~ %(?.%F{green}.%F{red})%#%f '
+
+# Fun Aliases
+alias hg="history | grep"
+alias g="grep"
+
+source ~/.zshrc.local
