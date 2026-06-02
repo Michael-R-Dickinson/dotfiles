@@ -8,6 +8,7 @@ fi
 # Fun Aliases
 alias hg="history | grep"
 alias g="grep"
+alias crazyclaude="claude --dangerously-skip-permissions"
 
 # Tmux
 alias tconf="vim ~/.tmux.conf"
