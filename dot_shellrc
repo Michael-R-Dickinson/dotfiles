@@ -1,0 +1,28 @@
+# Resolve current dotfiles path in both bash and zsh
+if [ -n "${ZSH_VERSION}" ]; then
+    DOTFILES_DIR=$(dirname "$(realpath "${(%):-%x}")")
+else
+    DOTFILES_DIR=$(dirname "$(realpath "${BASH_SOURCE[0]}")")
+fi
+
+# Fun Aliases
+alias hg="history | grep"
+alias g="grep"
+
+# Tmux
+alias tconf="vim ~/.tmux.conf"
+alias trefresh="tmux source-file ~/.tmux.conf"
+
+
+# Shell Specifics
+if [[ $SHELL == "/bin/bash" ]]; then
+    if [ -e ~/.bashrc.local ]; then
+        source ~/.bashrc.local
+    fi
+    source $DOTFILES_DIR/.bashrc
+elif [[ $SHELL == "/bin/zsh" ]]; then
+    if [ -e ~/.zshrc.local ]; then
+        source ~/.zshrc.local
+    fi
+    source $DOTFILES_DIR/.zshrc
+fi

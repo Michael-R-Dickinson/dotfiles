@@ -1,8 +1,4 @@
-# Fun Aliases
-alias hg="history | grep"
-alias g="grep"
+echo "THIS IS ZSH WOOHOO"
 
-source ~/.zshrc.local
-
-# Starship Prompt
+# Starship
 eval "$(starship init zsh)"

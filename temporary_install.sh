@@ -1,6 +1,3 @@
-# Source Originals
-source ~/.zshrc
-
 # Temp dotfile dir
 DOTFILES_TMP=$(mktemp -d)
 git -C $DOTFILES_TMP clone https://github.com/Michael-R-Dickinson/dotfiles.git .
@@ -14,7 +11,7 @@ git -C $DOTFILES_TMP clone https://github.com/Michael-R-Dickinson/dotfiles.git .
 )
 
 # Source our zshrc
-source $DOTFILES_TMP/.zshrc
+source $DOTFILES_TMP/.shellrc
 
 # Set shell and dotfiles paths
 export XDG_CONFIG_HOME="$DOTFILES_TMP"
@@ -23,6 +20,11 @@ export ZDOTDIR="$DOTFILES_TMP"
 # Alias tools to use config files
 alias vim='vim -u $DOTFILES_TMP/.vimrc'
 alias tmux='tmux -f $DOTFILES_TMP/.tmux.conf'
+
+# Tmux setup - force dotfile bashrc
+if [[ $SHELL == "/bin/bash" ]]; then
+    echo "set -g default-command \"bash --rcfile $DOTFILES_TMP/.shellrc\"" >> $DOTFILES_TMP/.tmux.conf
+fi
 
 # Starship
 curl -sS https://starship.rs/install.sh | sh -s -- --bin-dir $DOTFILES_TMP --yes > /dev/null

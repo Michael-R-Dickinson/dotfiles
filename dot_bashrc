@@ -1,0 +1,4 @@
+echo "THIS IS BASH WOOHOO"
+
+# Starship
+eval "$(starship init bash)"
