@@ -1,4 +1,2 @@
-echo "THIS IS ZSH WOOHOO"
-
 # Starship
 eval "$(starship init zsh)"
