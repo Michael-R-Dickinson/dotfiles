@@ -5,16 +5,6 @@ else
     DOTFILES_DIR=$(dirname "$(realpath "${BASH_SOURCE[0]}")")
 fi
 
-# Fun Aliases
-alias hg="history | grep"
-alias g="grep"
-alias crazyclaude="claude --dangerously-skip-permissions"
-
-# Tmux
-alias tconf="vim ~/.tmux.conf"
-alias trefresh="tmux source-file ~/.tmux.conf"
-
-
 # Shell Specifics
 if [[ $SHELL == "/bin/bash" ]]; then
     if [ -e ~/.bashrc.local ]; then
@@ -29,3 +19,6 @@ elif [[ $SHELL == "/bin/zsh" ]]; then
     fi
     source $DOTFILES_DIR/.zshrc
 fi
+
+# Aliases
+source $DOTFILES_DIR/.shell_aliases
