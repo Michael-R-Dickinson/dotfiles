@@ -19,11 +19,13 @@ alias trefresh="tmux source-file ~/.tmux.conf"
 if [[ $SHELL == "/bin/bash" ]]; then
     if [ -e ~/.bashrc.local ]; then
         source ~/.bashrc.local
+        source ~/.bashrc
     fi
     source $DOTFILES_DIR/.bashrc
 elif [[ $SHELL == "/bin/zsh" ]]; then
     if [ -e ~/.zshrc.local ]; then
         source ~/.zshrc.local
+        source ~/.zshrc
     fi
     source $DOTFILES_DIR/.zshrc
 fi

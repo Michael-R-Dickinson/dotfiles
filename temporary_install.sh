@@ -25,10 +25,11 @@ alias tmux='tmux -f $DOTFILES_TMP/.tmux.conf'
 if [[ $SHELL == "/bin/bash" ]]; then
     echo "set -g default-command \"bash --rcfile $DOTFILES_TMP/.shellrc\"" >> $DOTFILES_TMP/.tmux.conf
 fi
+
 # TPM
 git clone https://github.com/tmux-plugins/tpm $DOTFILES_TMP/plugins/tpm
 sed -i "s|run '~/.tmux/plugins/tpm/tpm'|run '$DOTFILES_TMP/plugins/tpm/tpm'|" $DOTFILES_TMP/.tmux.conf
-echo "set-environment -g TMUX_PLUGIN_MANAGER_PATH '$DOTFILES_TMP/plugins/'" >> $DOTFILES_TMP/.tmux.conf
+sed -i "1i set-environment -g TMUX_PLUGIN_MANAGER_PATH '$DOTFILES_TMP/plugins/'" $DOTFILES_TMP/.tmux.conf
 
 # Starship
 curl -sS https://starship.rs/install.sh | sh -s -- --bin-dir $DOTFILES_TMP --yes > /dev/null
