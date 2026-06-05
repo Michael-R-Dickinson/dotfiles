@@ -27,7 +27,6 @@ for rcfile in "$DOTFILES_TMP/.zshrc" "$DOTFILES_TMP/.bashrc"; do
 done
 
 # Alias tools to use config files
-alias vim='vim -u $DOTFILES_TMP/.vimrc'
 alias tmux='tmux -L $TMUX_TMP_SOCKET -f $DOTFILES_TMP/.tmux.conf'
 
 # Tmux setup - force dotfile bashrc
