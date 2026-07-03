@@ -11,6 +11,10 @@ source <(curl -sL https://raw.githubusercontent.com/Michael-R-Dickinson/dotfiles
 
 Inside tmux, install the tmux plugins with `prefix + I` (prefix is `C-a`).
 
+Claude Code is isolated too: `CLAUDE_CONFIG_DIR` points at the temp dir, so
+the repo's `claude/CLAUDE.md` and `claude/skills/` are used and nothing under
+`~/.claude` is touched. This is a fresh config, so Claude will need a login.
+
 Set `DOTFILES_NO_TMUX=1` to skip the auto-launch (just set up the shell), or
 `DOTFILES_SRC=/path/to/repo` to install from a local checkout instead of GitHub.
 

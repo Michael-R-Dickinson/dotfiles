@@ -25,6 +25,10 @@ TMUX_CONF="$DOTFILES_TMP/tmux/tmux.conf"
 export DOTFILES_TMP
 export XDG_CONFIG_HOME="$DOTFILES_TMP"
 export ZDOTDIR="$DOTFILES_TMP"
+# Claude Code ignores XDG_CONFIG_HOME; CLAUDE_CONFIG_DIR fully isolates its
+# config (CLAUDE.md, skills, auth, state) inside the temp dir. The repo ships
+# claude/ which lands here verbatim during install.
+export CLAUDE_CONFIG_DIR="$DOTFILES_TMP/claude"
 export TMUX_TMP_SOCKET="dotfiles"
 export TMUX_CONF
 
@@ -52,6 +56,10 @@ if [ ! -f "$MARKER" ]; then
     mkdir -p "$DOTFILES_TMP/tmux"
     mv "$DOTFILES_TMP/.tmux.conf" "$TMUX_CONF"
 
+    # Claude reads CLAUDE.md/skills from here; ensure it exists even if the
+    # shipped claude/ dir is absent.
+    mkdir -p "$CLAUDE_CONFIG_DIR/skills"
+
     # Make temporary rc files self-locating for shells started later (tmux panes).
     for rcfile in "$DOTFILES_TMP/.zshrc" "$DOTFILES_TMP/.bashrc"; do
         [ -f "$rcfile" ] || continue
@@ -60,6 +68,7 @@ if [ ! -f "$MARKER" ]; then
             printf 'export DOTFILES_TMP="%s"\n' "$DOTFILES_TMP"
             printf 'export XDG_CONFIG_HOME="%s"\n' "$DOTFILES_TMP"
             printf 'export ZDOTDIR="%s"\n' "$DOTFILES_TMP"
+            printf 'export CLAUDE_CONFIG_DIR="%s"\n' "$CLAUDE_CONFIG_DIR"
             printf 'export TMUX_TMP_SOCKET="%s"\n' "$TMUX_TMP_SOCKET"
             printf 'export TMUX_CONF="%s"\n' "$TMUX_CONF"
             printf 'export PATH="%s:$PATH"\n' "$DOTFILES_TMP"
@@ -75,6 +84,7 @@ if [ ! -f "$MARKER" ]; then
         # TPM installs plugins here (prefix + I) and reads config from here.
         printf "set-environment -g TMUX_PLUGIN_MANAGER_PATH '%s/plugins/'\n" "$DOTFILES_TMP"
         printf "set-environment -g XDG_CONFIG_HOME '%s'\n" "$DOTFILES_TMP"
+        printf "set-environment -g CLAUDE_CONFIG_DIR '%s'\n" "$CLAUDE_CONFIG_DIR"
         # New zsh panes read \$ZDOTDIR/.zshrc; new bash panes handled below.
         printf "set-environment -g ZDOTDIR '%s'\n" "$DOTFILES_TMP"
         cat "$TMUX_CONF"
