@@ -14,6 +14,8 @@
 #   DOTFILES_TMP     override the temp dir (default: ${TMPDIR:-/tmp}/dotfiles-tmp)
 #   DOTFILES_SRC     copy from this local dir instead of cloning from GitHub
 #   DOTFILES_NO_TMUX if set, do not auto-launch tmux at the end
+#   DOTFILES_HISTORY persist Claude history here so `claude --resume` survives a
+#                    temp-dir cleanup (default: ~/.local/state/dotfiles-claude)
 
 # Consistent temp dir so repeat runs can detect an existing install.
 DOTFILES_TMP="${DOTFILES_TMP:-${TMPDIR:-/tmp}/dotfiles-tmp}"
@@ -59,6 +61,16 @@ if [ ! -f "$MARKER" ]; then
     # Claude reads CLAUDE.md/skills from here; ensure it exists even if the
     # shipped dot_claude/ dir is absent.
     mkdir -p "$CLAUDE_CONFIG_DIR/skills"
+
+    # Persist Claude conversation history outside the throwaway temp dir so
+    # `claude --resume` still works after DOTFILES_TMP is cleaned up. Transcripts
+    # are keyed by real working directory, so resume matches across reinstalls.
+    # This is the one thing we deliberately keep outside DOTFILES_TMP; wipe it
+    # with `rm -rf "$DOTFILES_HISTORY"` for a truly clean slate.
+    DOTFILES_HISTORY="${DOTFILES_HISTORY:-$HOME/.local/state/dotfiles-claude}"
+    mkdir -p "$DOTFILES_HISTORY/projects" "$DOTFILES_HISTORY/todos"
+    ln -sfn "$DOTFILES_HISTORY/projects" "$CLAUDE_CONFIG_DIR/projects"
+    ln -sfn "$DOTFILES_HISTORY/todos" "$CLAUDE_CONFIG_DIR/todos"
 
     # Make temporary rc files self-locating for shells started later (tmux panes).
     for rcfile in "$DOTFILES_TMP/.zshrc" "$DOTFILES_TMP/.bashrc"; do
