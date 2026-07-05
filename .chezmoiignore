@@ -1,0 +1,5 @@
+# Repo-only files that should never be applied to $HOME by chezmoi.
+README.md
+temporary_install.sh
+.DS_Store
+*.swp

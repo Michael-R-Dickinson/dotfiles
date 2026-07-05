@@ -27,8 +27,8 @@ export XDG_CONFIG_HOME="$DOTFILES_TMP"
 export ZDOTDIR="$DOTFILES_TMP"
 # Claude Code ignores XDG_CONFIG_HOME; CLAUDE_CONFIG_DIR fully isolates its
 # config (CLAUDE.md, skills, auth, state) inside the temp dir. The repo ships
-# claude/ which lands here verbatim during install.
-export CLAUDE_CONFIG_DIR="$DOTFILES_TMP/claude"
+# dot_claude/, which the dot_* rename loop below turns into .claude here.
+export CLAUDE_CONFIG_DIR="$DOTFILES_TMP/.claude"
 export TMUX_TMP_SOCKET="dotfiles"
 export TMUX_CONF
 
@@ -57,7 +57,7 @@ if [ ! -f "$MARKER" ]; then
     mv "$DOTFILES_TMP/.tmux.conf" "$TMUX_CONF"
 
     # Claude reads CLAUDE.md/skills from here; ensure it exists even if the
-    # shipped claude/ dir is absent.
+    # shipped dot_claude/ dir is absent.
     mkdir -p "$CLAUDE_CONFIG_DIR/skills"
 
     # Make temporary rc files self-locating for shells started later (tmux panes).
