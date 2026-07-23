@@ -12,15 +12,37 @@
 #
 # Env knobs:
 #   DOTFILES_TMP     override the temp dir (default: ${TMPDIR:-/tmp}/dotfiles-tmp)
+#   DOTFILES_SAVE_DIR persistent root for the install + tmux-resurrect state, so
+#                    tmux sessions survive a temp-dir cleanup (default: unset)
 #   DOTFILES_SRC     copy from this local dir instead of cloning from GitHub
 #   DOTFILES_NO_TMUX if set, do not auto-launch tmux at the end
 #   DOTFILES_HISTORY persist Claude history here so `claude --resume` survives a
 #                    temp-dir cleanup (default: ~/.local/state/dotfiles-claude)
 
-# Consistent temp dir so repeat runs can detect an existing install.
-DOTFILES_TMP="${DOTFILES_TMP:-${TMPDIR:-/tmp}/dotfiles-tmp}"
+# Optional persistent "save dir": when set, both the install (DOTFILES_TMP) and
+# tmux-resurrect state live under it, so tmux sessions survive a temp-dir wipe.
+DOTFILES_SAVE_DIR="${DOTFILES_SAVE_DIR:-}"
+case "$DOTFILES_SAVE_DIR" in
+    "~")   DOTFILES_SAVE_DIR="$HOME" ;;
+    "~/"*) DOTFILES_SAVE_DIR="$HOME/${DOTFILES_SAVE_DIR#\~/}" ;;
+esac
+DOTFILES_SAVE_DIR="${DOTFILES_SAVE_DIR%/}"
+
+# Consistent temp dir so repeat runs can detect an existing install. A save dir,
+# if given, roots the install in a persistent location you control instead.
+if [ -n "$DOTFILES_SAVE_DIR" ]; then
+    DOTFILES_TMP="${DOTFILES_TMP:-$DOTFILES_SAVE_DIR/dotfiles-tmp}"
+else
+    DOTFILES_TMP="${DOTFILES_TMP:-${TMPDIR:-/tmp}/dotfiles-tmp}"
+fi
 DOTFILES_TMP="${DOTFILES_TMP%/}"
 MARKER="$DOTFILES_TMP/.dotfiles_installed"
+
+# tmux-resurrect save location. With a save dir it persists there; otherwise we
+# leave it unset so resurrect keeps its default (~/.local/share/tmux/resurrect).
+if [ -n "$DOTFILES_SAVE_DIR" ]; then
+    RESURRECT_DIR="$DOTFILES_SAVE_DIR/tmux-resurrect"
+fi
 
 # Paths/vars needed by both fresh installs and re-runs.
 TMUX_CONF="$DOTFILES_TMP/tmux/tmux.conf"
@@ -106,6 +128,14 @@ if [ ! -f "$MARKER" ]; then
     case "$SHELL" in
         *bash*) printf 'set -g default-command "bash --rcfile %s/.bashrc"\n' "$DOTFILES_TMP" >> "$TMUX_CONF" ;;
     esac
+
+    # Point tmux-resurrect at the persistent save dir. Absolute path, so no env
+    # expansion is needed inside the tmux option; resurrect reads it lazily, so
+    # appending here (after the plugin declarations) is fine.
+    if [ -n "$RESURRECT_DIR" ]; then
+        mkdir -p "$RESURRECT_DIR"
+        printf "set -g @resurrect-dir '%s'\n" "$RESURRECT_DIR" >> "$TMUX_CONF"
+    fi
 
     # Starship prompt, installed into the temp dir only.
     curl -sS https://starship.rs/install.sh | sh -s -- --bin-dir "$DOTFILES_TMP" --yes > /dev/null

@@ -9,6 +9,14 @@ Works on Linux and macOS, with zsh or bash.
 source <(curl -sL https://raw.githubusercontent.com/Michael-R-Dickinson/dotfiles/refs/heads/main/temporary_install.sh)
 ```
 
+To make the install (and your tmux sessions) survive a temp-dir cleanup, point
+it at a persistent save dir with `DOTFILES_SAVE_DIR`. Both the install and the
+tmux-resurrect state live under it, so re-running restores your sessions.
+
+```
+DOTFILES_SAVE_DIR=~/.dotfiles-save source <(curl -sL https://raw.githubusercontent.com/Michael-R-Dickinson/dotfiles/refs/heads/main/temporary_install.sh)
+```
+
 Inside tmux, install the tmux plugins with `prefix + I` (prefix is `C-a`).
 
 Claude Code is isolated too: `CLAUDE_CONFIG_DIR` points at the temp dir, so
