@@ -21,10 +21,16 @@
 
 # Optional persistent "save dir": when set, both the install (DOTFILES_TMP) and
 # tmux-resurrect state live under it, so tmux sessions survive a temp-dir wipe.
+# Resolve to an absolute path: it gets baked into the tmux config, and TPM/tmux
+# run from a different working directory, so a relative path would break them.
 DOTFILES_SAVE_DIR="${DOTFILES_SAVE_DIR:-}"
 case "$DOTFILES_SAVE_DIR" in
+    "")    ;;                                                   # unset
     "~")   DOTFILES_SAVE_DIR="$HOME" ;;
     "~/"*) DOTFILES_SAVE_DIR="$HOME/${DOTFILES_SAVE_DIR#\~/}" ;;
+    /*)    ;;                                                   # already absolute
+    ./*)   DOTFILES_SAVE_DIR="$PWD/${DOTFILES_SAVE_DIR#./}" ;;  # relative -> cwd
+    *)     DOTFILES_SAVE_DIR="$PWD/$DOTFILES_SAVE_DIR" ;;
 esac
 DOTFILES_SAVE_DIR="${DOTFILES_SAVE_DIR%/}"
 
