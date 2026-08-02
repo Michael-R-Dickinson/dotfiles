@@ -4,6 +4,9 @@ alias hg="history | grep"
 alias lg="ls -a | grep"
 alias g="grep"
 alias cc="claude --dangerously-skip-permissions"
+if command -v bat >/dev/null 2>&1; then
+  alias cat="bat --color=always --paging=never"
+fi
 
 # Tmux
 alias tconf="vim ~/.tmux.conf"

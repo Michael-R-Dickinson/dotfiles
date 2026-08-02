@@ -15,3 +15,8 @@ fi
 if [ -f "$DOTFILES_DIR/.shell_aliases" ]; then
     source "$DOTFILES_DIR/.shell_aliases"
 fi
+
+# Machine-local overrides (not tracked in dotfiles)
+if [ -f "$HOME/.zshrc.local" ]; then
+    source "$HOME/.zshrc.local"
+fi
