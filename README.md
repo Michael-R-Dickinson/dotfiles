@@ -26,7 +26,10 @@ the repo's `claude/CLAUDE.md` and `claude/skills/` are used and nothing under
 Set `DOTFILES_NO_TMUX=1` to skip the auto-launch (just set up the shell), or
 `DOTFILES_SRC=/path/to/repo` to install from a local checkout instead of GitHub.
 
-Permanant Install
+Permanent Install
 ```sh
 sh -c "$(curl -fsLS https://get.chezmoi.io)" -- init --apply $GITHUB_USERNAME
 ```
+
+The permanent install also installs Starship into `~/.local/bin` and installs
+the configured tmux plugins.

@@ -1,5 +1,9 @@
 DOTFILES_DIR="${DOTFILES_TMP:-$HOME}"
 
+if [ -z "$DOTFILES_TMP" ]; then
+    export PATH="$HOME/.local/bin:$PATH"
+fi
+
 alias vim='vim -u $DOTFILES_DIR/.vimrc'
 
 # Starship
