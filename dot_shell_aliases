@@ -1,5 +1,6 @@
 
 # Fun Aliases
+alias ls="ls --color='auto'
 alias hg="history | grep"
 alias lg="ls -a | grep"
 alias g="grep"
