@@ -1,6 +1,7 @@
 
 # Fun Aliases
 alias hg="history | grep"
+alias lg="ls -a | grep"
 alias g="grep"
 alias cc="claude --dangerously-skip-permissions"
 
