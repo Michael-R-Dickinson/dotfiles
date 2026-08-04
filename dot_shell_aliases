@@ -4,7 +4,7 @@ alias ls="ls --color='auto'
 alias hg="history | grep"
 alias lg="ls -a | grep"
 alias g="grep"
-alias cc="claude --dangerously-skip-permissions"
+alias cc="claude --dangerously-skip-permissions --remote-control"
 alias cx="codex --yolo"
 if command -v bat >/dev/null 2>&1; then
   alias cat="bat --color=always --paging=never"
