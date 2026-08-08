@@ -1,7 +1,12 @@
 ---
 disable-model-invocation: true
-name: Setup Model Repo
+name: SetupModelRepo
 description: Sets up a repo that involves a ML model and runs a smoke test
+tags:
+  - repository-setup
+  - model-inference
+  - machine-learning
+  - environment-setup
 ---
 Can you get this project up and running. Install dependencies and smoke test it, etc.
 

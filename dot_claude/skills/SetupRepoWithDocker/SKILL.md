@@ -1,6 +1,11 @@
 ---
 disable-model-invocation: true
-name: Setup Repo With Docker
+name: SetupRepoWithDocker
+tags:
+  - docker-compose-config
+  - cuda-environment
+  - docker-configuration
+  - environment-setup
 ---
 ### Instructions
 Investigate the repo for setup instructions and environment info, and then create and iterate on a dockerfile and docker-compose to run the project.

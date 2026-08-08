@@ -1,7 +1,12 @@
 ---
 disable-model-invocation: true
-name: Prepare Worktrees
+name: PrepareWorktrees
 description: Write a script allowing us to develop in multiple worktrees simultaneously
+tags:
+  - git-worktrees
+  - dev-environment-automation
+  - bash-scripting
+  - docker-compose-config
 ---
 Write a bash or python script called init_worktree that can be run inside a worktree to set it up with everything necessary for development. 
 This should copy/symlink over necessary files, install dependencies, etc.
