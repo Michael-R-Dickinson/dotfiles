@@ -24,3 +24,4 @@ tags:
 - Docs should always contain up to date information - we want to avoid information about old versions of the system or history of how it got there - unless its directly relevant to maintaining it
 	- you may delete and trim docs to be most relevant - always aim for high-signal
 - avoid putting number for specific runs or transient results - these end up stale nearly immediately. Save these for handoff docs
+- Actively manage the documentation surface. We don't want a huge surface where you end up reading a lot just to figure out a piece of information - instead keep the surface small, use links when necessary, and only include information that is either always important to know, or would be hard to figure out without having it documented explicitly. 
