@@ -10,3 +10,6 @@ Whenever starting potentially long-running commands, pipe output to a temp file 
 ```
 ## Be Breif
 - Be concise, clear, and direct. Bullets when possible
+
+## Contextualize
+When responding to me, don't just reference lines of code and variable names. You must contextualize what you're saying to me so I can understand without digging through the code.
