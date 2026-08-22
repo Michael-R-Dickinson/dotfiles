@@ -1,0 +1,65 @@
+# herdr config — mirrors the keybinds/behavior of ~/.tmux.conf (dot_tmux.conf)
+# Docs: https://herdr.dev  |  see full defaults with `herdr --default-config`
+
+[keys]
+# Rebind prefix (tmux: unbind C-b; set -g prefix C-a; bind C-a send-prefix)
+prefix = "ctrl+a"
+
+# Reload config quickly (tmux: bind r source-file ~/.tmux.conf)
+reload_config = "prefix+r"
+
+# Detach from session (tmux default, unchanged in dot_tmux.conf: prefix+d)
+# herdr's own default is prefix+q, overridden here to match tmux
+detach = "prefix+d"
+
+# Vim-style pane navigation, bound directly with no prefix needed
+# (tmux: bind -n C-h select-pane -L / bind -n C-l select-pane -R)
+# tmux had C-j/C-k commented out (down/up), so left unbound here too
+focus_pane_left = ["ctrl+h", "prefix+h"]
+focus_pane_right = ["ctrl+l", "prefix+l"]
+
+# Single shortcut next/prev window, bound directly with no prefix needed
+# (tmux: unbind C-n/C-b; bind -n C-n next-window; bind -n C-b previous-window)
+next_tab = ["ctrl+n", "prefix+n"]
+previous_tab = ["ctrl+b", "prefix+p"]
+
+# New window/pane (tmux: bind c new-window -c "#{pane_current_path}")
+new_tab = "prefix+c"
+
+# Splits (tmux: bind % / | split-window -h  ->  side-by-side (vertical divider)
+#         tmux: bind '"' / - split-window -v  ->  stacked (horizontal divider)
+# these are herdr's own defaults, listed here to document the tmux mapping
+split_vertical = "prefix+v"
+split_horizontal = "prefix+minus"
+
+# Enter copy/scroll mode (tmux: setw -g mode-keys vi; scroll wheel also enters
+# copy-mode-vi via the WheelUpPane binding). herdr's default prefix+[ matches
+# tmux's default copy-mode key, so no override needed. Once inside, herdr's
+# built-in copy mode already uses vi keys: h/j/k/l move, v/space select,
+# y/enter copy, q/esc exit — same idea as the tmux vi-copy-mode binds below.
+copy_mode = "prefix+["
+
+[terminal]
+# New panes/tabs/workspaces inherit the current pane's directory
+# (tmux: every new-window/split-window bind passes -c "#{pane_current_path}")
+new_cwd = "follow"
+
+[ui]
+# Mouse support: click panes, resize panes, scroll (tmux: set -g mouse on)
+mouse_capture = true
+
+[theme]
+# Theme (tmux: set -g @plugin 'catppuccin/tmux', flavor 'mocha')
+name = "catppuccin"
+
+# --- No direct herdr equivalent, noted for reference ---
+# - default-terminal / terminal-overrides / history-limit: herdr manages the
+#   terminal and scrollback itself; no matching config knobs.
+# - tmux-resurrect / tmux-continuum (session save/restore): herdr persists
+#   workspaces/panes natively across detach & restart, so these aren't needed.
+#   For surviving full server restarts with pane contents, see:
+#   [experimental]
+#   pane_history = true
+# - tmux-which-key: herdr has a built-in keybind help overlay (prefix+? by
+#   default) instead of a separate plugin.
+# - tmux-floax (floating pane): no built-in equivalent found.
