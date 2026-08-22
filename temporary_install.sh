@@ -118,7 +118,10 @@ if [ ! -f "$MARKER" ]; then
             printf 'export TMUX_TMP_SOCKET="%s"\n' "$TMUX_TMP_SOCKET"
             printf 'export TMUX_CONF="%s"\n' "$TMUX_CONF"
             printf 'export PATH="%s:$PATH"\n' "$DOTFILES_TMP"
-            cat "$rcfile"
+            # `command` bypasses any `cat` alias (e.g. cat='bat --color=always')
+            # from the invoking shell's real profile, which would otherwise
+            # bake ANSI escape codes into this generated rc file.
+            command cat "$rcfile"
         } > "$tmp_rcfile" && mv "$tmp_rcfile" "$rcfile"
     done
 
@@ -133,7 +136,7 @@ if [ ! -f "$MARKER" ]; then
         printf "set-environment -g CLAUDE_CONFIG_DIR '%s'\n" "$CLAUDE_CONFIG_DIR"
         # New zsh panes read \$ZDOTDIR/.zshrc; new bash panes handled below.
         printf "set-environment -g ZDOTDIR '%s'\n" "$DOTFILES_TMP"
-        cat "$TMUX_CONF"
+        command cat "$TMUX_CONF"  # `command` bypasses a `cat` alias, see above
     } > "$TMUX_CONF.tmp" && mv "$TMUX_CONF.tmp" "$TMUX_CONF"
 
     # bash has no ZDOTDIR equivalent, so force our rc for bash panes.
