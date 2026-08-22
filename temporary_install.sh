@@ -59,6 +59,11 @@ export ZDOTDIR="$DOTFILES_TMP"
 # config (CLAUDE.md, skills, auth, state) inside the temp dir. The repo ships
 # dot_claude/, which the dot_* rename loop below turns into .claude here.
 export CLAUDE_CONFIG_DIR="$DOTFILES_TMP/.claude"
+# herdr reads $HERDR_CONFIG_PATH as a literal file path (not a dir, and not
+# XDG_CONFIG_HOME) or else falls back to ~/.config/herdr/config.toml, so point
+# it at the temp copy explicitly. The repo ships dot_config/herdr/config.toml,
+# which the dot_* rename loop below turns into .config/herdr/config.toml here.
+export HERDR_CONFIG_PATH="$DOTFILES_TMP/.config/herdr/config.toml"
 export TMUX_TMP_SOCKET="dotfiles"
 export TMUX_CONF
 
@@ -109,6 +114,7 @@ if [ ! -f "$MARKER" ]; then
             printf 'export XDG_CONFIG_HOME="%s"\n' "$DOTFILES_TMP"
             printf 'export ZDOTDIR="%s"\n' "$DOTFILES_TMP"
             printf 'export CLAUDE_CONFIG_DIR="%s"\n' "$CLAUDE_CONFIG_DIR"
+            printf 'export HERDR_CONFIG_PATH="%s"\n' "$HERDR_CONFIG_PATH"
             printf 'export TMUX_TMP_SOCKET="%s"\n' "$TMUX_TMP_SOCKET"
             printf 'export TMUX_CONF="%s"\n' "$TMUX_CONF"
             printf 'export PATH="%s:$PATH"\n' "$DOTFILES_TMP"
@@ -145,6 +151,10 @@ if [ ! -f "$MARKER" ]; then
 
     # Starship prompt, installed into the temp dir only.
     curl -sS https://starship.rs/install.sh | sh -s -- --bin-dir "$DOTFILES_TMP" --yes > /dev/null
+
+    # herdr, installed into the temp dir only (HERDR_INSTALL_DIR is read by
+    # its install script, so it must be exported for the piped `sh` to see).
+    (export HERDR_INSTALL_DIR="$DOTFILES_TMP"; curl -fsSL https://herdr.dev/install.sh | sh) > /dev/null
 
     touch "$MARKER"
 fi
