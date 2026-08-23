@@ -43,6 +43,8 @@ else
 fi
 DOTFILES_TMP="${DOTFILES_TMP%/}"
 MARKER="$DOTFILES_TMP/.dotfiles_installed"
+TMUX_HELPER="$DOTFILES_TMP/temporary_install_tmux.sh"
+HERDR_HELPER="$DOTFILES_TMP/temporary_install_herdr.sh"
 
 # tmux-resurrect save location. With a save dir it persists there; otherwise we
 # leave it unset so resurrect keeps its default (~/.local/share/tmux/resurrect).
@@ -51,7 +53,6 @@ if [ -n "$DOTFILES_SAVE_DIR" ]; then
 fi
 
 # Paths/vars needed by both fresh installs and re-runs.
-TMUX_CONF="$DOTFILES_TMP/tmux/tmux.conf"
 export DOTFILES_TMP
 export XDG_CONFIG_HOME="$DOTFILES_TMP"
 export ZDOTDIR="$DOTFILES_TMP"
@@ -59,15 +60,9 @@ export ZDOTDIR="$DOTFILES_TMP"
 # config (CLAUDE.md, skills, auth, state) inside the temp dir. The repo ships
 # dot_claude/, which the dot_* rename loop below turns into .claude here.
 export CLAUDE_CONFIG_DIR="$DOTFILES_TMP/.claude"
-# herdr reads $HERDR_CONFIG_PATH as a literal file path (not a dir, and not
-# XDG_CONFIG_HOME) or else falls back to ~/.config/herdr/config.toml, so point
-# it at the temp copy explicitly. The repo ships dot_config/herdr/config.toml,
-# which the dot_* rename loop below turns into .config/herdr/config.toml here.
-export HERDR_CONFIG_PATH="$DOTFILES_TMP/.config/herdr/config.toml"
-export TMUX_TMP_SOCKET="dotfiles"
-export TMUX_CONF
 
-if [ ! -f "$MARKER" ]; then
+FRESH_INSTALL=
+if [ ! -f "$MARKER" ] || [ ! -f "$TMUX_HELPER" ] || [ ! -f "$HERDR_HELPER" ]; then
     # Fresh install: start from a clean dir.
     rm -rf "$DOTFILES_TMP"
     mkdir -p "$DOTFILES_TMP"
@@ -80,16 +75,24 @@ if [ ! -f "$MARKER" ]; then
         git clone --depth 1 https://github.com/Michael-R-Dickinson/dotfiles.git "$DOTFILES_TMP"
     fi
 
+    FRESH_INSTALL=1
+fi
+
+# These helpers live in the cloned checkout so the remote one-line installer
+# does not need to download multiple scripts before it knows DOTFILES_TMP.
+. "$TMUX_HELPER"
+. "$HERDR_HELPER"
+temporary_tmux_initialize
+temporary_herdr_initialize
+
+if [ -n "${FRESH_INSTALL:-}" ]; then
+
     # Rename files in the form "dot_zshrc" to ".zshrc".
     for file in "$DOTFILES_TMP"/dot_*; do
         [ -e "$file" ] || continue
         base=$(basename "$file")
         mv "$file" "$DOTFILES_TMP/.${base#dot_}"
     done
-
-    # Put tmux config where TPM looks for it when XDG_CONFIG_HOME is overridden.
-    mkdir -p "$DOTFILES_TMP/tmux"
-    mv "$DOTFILES_TMP/.tmux.conf" "$TMUX_CONF"
 
     # Claude reads CLAUDE.md/skills from here; ensure it exists even if the
     # shipped dot_claude/ dir is absent.
@@ -105,7 +108,7 @@ if [ ! -f "$MARKER" ]; then
     ln -sfn "$DOTFILES_HISTORY/projects" "$CLAUDE_CONFIG_DIR/projects"
     ln -sfn "$DOTFILES_HISTORY/todos" "$CLAUDE_CONFIG_DIR/todos"
 
-    # Make temporary rc files self-locating for shells started later (tmux panes).
+    # Make temporary rc files self-locating for shells started later.
     for rcfile in "$DOTFILES_TMP/.zshrc" "$DOTFILES_TMP/.bashrc"; do
         [ -f "$rcfile" ] || continue
         tmp_rcfile="$rcfile.tmp"
@@ -125,48 +128,18 @@ if [ ! -f "$MARKER" ]; then
         } > "$tmp_rcfile" && mv "$tmp_rcfile" "$rcfile"
     done
 
-    # TPM: clone it and point the tmux config at the temp paths.
-    git clone --depth 1 https://github.com/tmux-plugins/tpm "$DOTFILES_TMP/plugins/tpm"
-    perl -0pi -e "s|run '~/.tmux/plugins/tpm/tpm'|run '$DOTFILES_TMP/plugins/tpm/tpm'|" "$TMUX_CONF"
-    perl -0pi -e "s|source-file ~/.tmux.conf|source-file $TMUX_CONF|g" "$TMUX_CONF"
-    {
-        # TPM installs plugins here (prefix + I) and reads config from here.
-        printf "set-environment -g TMUX_PLUGIN_MANAGER_PATH '%s/plugins/'\n" "$DOTFILES_TMP"
-        printf "set-environment -g XDG_CONFIG_HOME '%s'\n" "$DOTFILES_TMP"
-        printf "set-environment -g CLAUDE_CONFIG_DIR '%s'\n" "$CLAUDE_CONFIG_DIR"
-        # New zsh panes read \$ZDOTDIR/.zshrc; new bash panes handled below.
-        printf "set-environment -g ZDOTDIR '%s'\n" "$DOTFILES_TMP"
-        command cat "$TMUX_CONF"  # `command` bypasses a `cat` alias, see above
-    } > "$TMUX_CONF.tmp" && mv "$TMUX_CONF.tmp" "$TMUX_CONF"
-
-    # bash has no ZDOTDIR equivalent, so force our rc for bash panes.
-    case "$SHELL" in
-        *bash*) printf 'set -g default-command "bash --rcfile %s/.bashrc"\n' "$DOTFILES_TMP" >> "$TMUX_CONF" ;;
-    esac
-
-    # Point tmux-resurrect at the persistent save dir. Absolute path, so no env
-    # expansion is needed inside the tmux option; resurrect reads it lazily, so
-    # appending here (after the plugin declarations) is fine.
-    if [ -n "$RESURRECT_DIR" ]; then
-        mkdir -p "$RESURRECT_DIR"
-        printf "set -g @resurrect-dir '%s'\n" "$RESURRECT_DIR" >> "$TMUX_CONF"
-    fi
+    temporary_tmux_install
 
     # Starship prompt, installed into the temp dir only.
     curl -sS https://starship.rs/install.sh | sh -s -- --bin-dir "$DOTFILES_TMP" --yes > /dev/null
 
-    # herdr, installed into the temp dir only (HERDR_INSTALL_DIR is read by
-    # its install script, so it must be exported for the piped `sh` to see).
-    (export HERDR_INSTALL_DIR="$DOTFILES_TMP"; curl -fsSL https://herdr.dev/install.sh | sh) > /dev/null
+    temporary_herdr_install
 
     touch "$MARKER"
 fi
 
 # Always set up the current shell (whether fresh install or reuse).
 export PATH="$DOTFILES_TMP:$PATH"
-
-# Alias tmux to use the temp socket + config.
-alias tmux='tmux -L "$TMUX_TMP_SOCKET" -f "$TMUX_CONF"'
 
 # Source local overrides (if any) then our rc into the current shell.
 if [ -n "$ZSH_VERSION" ]; then
@@ -177,8 +150,4 @@ elif [ -n "$BASH_VERSION" ]; then
     . "$DOTFILES_TMP/.bashrc"
 fi
 
-# Drop straight into the configured tmux (skip if already inside one, or opted out).
-# `command` bypasses the alias; new-session -A attaches to an existing session.
-if [ -z "$TMUX" ] && [ -z "$DOTFILES_NO_TMUX" ]; then
-    command tmux -L "$TMUX_TMP_SOCKET" -f "$TMUX_CONF" new-session -A -s dotfiles
-fi
+temporary_tmux_load
