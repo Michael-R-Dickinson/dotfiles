@@ -149,5 +149,3 @@ elif [ -n "$BASH_VERSION" ]; then
     [ -f "$HOME/.bashrc.local" ] && . "$HOME/.bashrc.local"
     . "$DOTFILES_TMP/.bashrc"
 fi
-
-temporary_tmux_load

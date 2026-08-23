@@ -22,5 +22,8 @@ temporary_herdr_install() {
     esac
 
     # HERDR_INSTALL_DIR must be exported for the piped installer to see it.
-    (export HERDR_INSTALL_DIR="$DOTFILES_TMP"; curl -fsSL https://herdr.dev/install.sh | sh) > /dev/null
+    # Installing herdr creates a binary called herdr in the HERDR_INSTALL_DIR. If we make HERDR_INSTALL_DIR=DOTFILES_TMP then the herdr binary file name conflicts with
+    # the herdr directory that is automatically created in DOTFILES_TMP - unclear why
+    export HERDR_INSTALL_DIR="$DOTFILES_TMP/herdr_install_dir"; mkdir $HERDR_INSTALL_DIR; curl -fsSL https://herdr.dev/install.sh | sh
+    export PATH="$HERDR_INSTALL_DIR:$PATH"
 }
