@@ -3,3 +3,4 @@ README.md
 temporary_install.sh
 .DS_Store
 *.swp
+progress/

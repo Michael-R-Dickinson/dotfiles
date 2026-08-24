@@ -118,9 +118,14 @@ if [ -n "${FRESH_INSTALL:-}" ]; then
             printf 'export ZDOTDIR="%s"\n' "$DOTFILES_TMP"
             printf 'export CLAUDE_CONFIG_DIR="%s"\n' "$CLAUDE_CONFIG_DIR"
             printf 'export HERDR_CONFIG_PATH="%s"\n' "$HERDR_CONFIG_PATH"
+            printf 'export HERDR_INSTALL_DIR="%s"\n' "$HERDR_INSTALL_DIR"
             printf 'export TMUX_TMP_SOCKET="%s"\n' "$TMUX_TMP_SOCKET"
             printf 'export TMUX_CONF="%s"\n' "$TMUX_CONF"
-            printf 'export PATH="%s:$PATH"\n' "$DOTFILES_TMP"
+            # HERDR_INSTALL_DIR must be on PATH here too, so that a bare `herdr`
+            # typed inside a temp shell (or a herdr pane) runs the temp herdr and
+            # talks to the temp server, rather than any herdr already installed
+            # on the real PATH.
+            printf 'export PATH="%s:%s:$PATH"\n' "$DOTFILES_TMP" "$HERDR_INSTALL_DIR"
             # `command` bypasses any `cat` alias (e.g. cat='bat --color=always')
             # from the invoking shell's real profile, which would otherwise
             # bake ANSI escape codes into this generated rc file.
@@ -138,8 +143,10 @@ if [ -n "${FRESH_INSTALL:-}" ]; then
     touch "$MARKER"
 fi
 
-# Always set up the current shell (whether fresh install or reuse).
-export PATH="$DOTFILES_TMP:$PATH"
+# Always set up the current shell (whether fresh install or reuse). The herdr
+# install dir is included on re-runs too, where temporary_herdr_install (which
+# also prepends it) is skipped.
+export PATH="$DOTFILES_TMP:$HERDR_INSTALL_DIR:$PATH"
 
 # Source local overrides (if any) then our rc into the current shell.
 if [ -n "$ZSH_VERSION" ]; then
