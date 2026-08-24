@@ -29,8 +29,8 @@ new_tab = "prefix+c"
 # Splits (tmux: bind % / | split-window -h  ->  side-by-side (vertical divider)
 #         tmux: bind '"' / - split-window -v  ->  stacked (horizontal divider)
 # these are herdr's own defaults, listed here to document the tmux mapping
-split_vertical = "ctrl+v"
-split_horizontal = "ctrl+minus"
+split_vertical = "ctrl+k"
+split_horizontal = "ctrl+i"
 
 # Enter copy/scroll mode (tmux: setw -g mode-keys vi; scroll wheel also enters
 # copy-mode-vi via the WheelUpPane binding). herdr's default prefix+[ matches
