@@ -6,8 +6,15 @@ fi
 
 alias vim='vim -u $DOTFILES_DIR/.vimrc'
 
-# Starship
-if command -v starship >/dev/null 2>&1; then
+# Prompt: Pure (zsh only, installed via npm), falling back to Starship when the
+# npm install was unavailable. PURE_DIR mirrors the `--prefix` the installers
+# pass to npm, which drops the package under <prefix>/lib/node_modules.
+PURE_DIR="$DOTFILES_DIR/.local/lib/node_modules/pure-prompt"
+if [ -d "$PURE_DIR" ]; then
+    fpath+=("$PURE_DIR")
+    autoload -U promptinit && promptinit
+    prompt pure
+elif command -v starship >/dev/null 2>&1; then
     eval "$(starship init zsh)"
 fi
 

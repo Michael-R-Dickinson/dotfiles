@@ -135,8 +135,19 @@ if [ -n "${FRESH_INSTALL:-}" ]; then
 
     temporary_tmux_install
 
-    # Starship prompt, installed into the temp dir only.
+    # Starship prompt, installed into the temp dir only. zsh prefers Pure below;
+    # Starship stays the bash prompt and the zsh fallback when npm is missing.
     curl -sS https://starship.rs/install.sh | sh -s -- --bin-dir "$DOTFILES_TMP" --yes > /dev/null
+
+    # Pure prompt for zsh, installed into the temp dir only. The prefix matches
+    # the PURE_DIR the temporary .zshrc computes from DOTFILES_TMP. npm is only
+    # needed here at install time; the package itself is plain zsh.
+    if command -v npm > /dev/null 2>&1; then
+        npm install --global --prefix "$DOTFILES_TMP/.local" pure-prompt > /dev/null 2>&1 ||
+            printf 'dotfiles: pure-prompt install failed, zsh will use Starship\n' >&2
+    else
+        printf 'dotfiles: npm not found, zsh will use Starship instead of Pure\n' >&2
+    fi
 
     temporary_herdr_install
 
