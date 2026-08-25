@@ -60,6 +60,7 @@ export ZDOTDIR="$DOTFILES_TMP"
 # config (CLAUDE.md, skills, auth, state) inside the temp dir. The repo ships
 # dot_claude/, which the dot_* rename loop below turns into .claude here.
 export CLAUDE_CONFIG_DIR="$DOTFILES_TMP/.claude"
+export CODEX_CONFIG_DIR="$DOTFILES_TMP/.codex"
 
 FRESH_INSTALL=
 if [ ! -f "$MARKER" ] || [ ! -f "$TMUX_HELPER" ] || [ ! -f "$HERDR_HELPER" ]; then
@@ -97,6 +98,8 @@ if [ -n "${FRESH_INSTALL:-}" ]; then
     # Claude reads CLAUDE.md/skills from here; ensure it exists even if the
     # shipped dot_claude/ dir is absent.
     mkdir -p "$CLAUDE_CONFIG_DIR/skills"
+    mkdir "$CODEX_CONFIG_DIR"
+    ln -s "$CLAUDE_CONFIG_DIR/skills" "$CODEX_CONFIG_DIR/skills"
 
     # Persist Claude conversation history outside the throwaway temp dir so
     # `claude --resume` still works after DOTFILES_TMP is cleaned up. Transcripts
@@ -117,6 +120,7 @@ if [ -n "${FRESH_INSTALL:-}" ]; then
             printf 'export XDG_CONFIG_HOME="%s"\n' "$DOTFILES_TMP"
             printf 'export ZDOTDIR="%s"\n' "$DOTFILES_TMP"
             printf 'export CLAUDE_CONFIG_DIR="%s"\n' "$CLAUDE_CONFIG_DIR"
+            printf 'export CODEX_HOME="%s"\n' "$CODEX_CONFIG_DIR"
             printf 'export HERDR_CONFIG_PATH="%s"\n' "$HERDR_CONFIG_PATH"
             printf 'export HERDR_INSTALL_DIR="%s"\n' "$HERDR_INSTALL_DIR"
             printf 'export TMUX_TMP_SOCKET="%s"\n' "$TMUX_TMP_SOCKET"
